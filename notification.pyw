@@ -5,21 +5,27 @@ This is a small project I made to host a web server on my computer that allows p
 #IMPORTS
 from flask import Flask,request
 import webbrowser
+from gtts import gTTS
+import os
 
 #SETUP
 app = Flask(__name__)
-message = ""
+message,language = "",'en'
 
 #FUNCTIONS
     #NOTIFY
 def popup(string):
     global message
     message = string
-    webbrowser.open('http://127.0.0.1/message')
+    webbrowser.open('http://127.0.0.1:5000/message')
+    myobj = gTTS(text=message, lang=language, slow=False)
+    myobj.save("message.mp3")
+    os.system("start message.mp3")
+    print("Notified")
     #FLASK
 @app.route("/",methods=["GET"])
 def index():
-    return """/
+    return """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,7 +59,7 @@ def index():
 
         textarea {
             width: 100%;
-            padding: 10px;
+            padding: 15px; /* Increased padding */
             font-size: 16px;
             background-color: #333333;
             color: #ffffff;
@@ -61,6 +67,7 @@ def index():
             border-radius: 5px;
             resize: none;
             height: 100px;
+            box-sizing: border-box; /* Ensure padding doesn't affect the width */
         }
 
         button {
@@ -131,7 +138,8 @@ def send():
     return "Message Sent!"
 
 @app.route("/message",methods=["GET"])
-    return f"""/
+def message():
+    return f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
